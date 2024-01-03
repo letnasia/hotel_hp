@@ -3,19 +3,26 @@ from django.db import transaction
 import datetime as dt
 
 from hotel.exceptions import RoomAlreadyReserved, RoomNotFound, DateFromPast, ReserveLimit
-from hotel.models import Reservation, RoomReserve, Room
+from hotel.models import Reservation, RoomReserve, Room, Guest
 from hotel.serializers.guest import GuestSerializer
 from hotel.serializers.room import RoomSerializer
 
 
 class ReservationViewSerializer(serializers.ModelSerializer):
     start_date = serializers.SerializerMethodField()
-    guests = GuestSerializer(many=True)
-    rooms = RoomSerializer(many=True)
+    guest = GuestSerializer()
+    rooms = serializers.SerializerMethodField()
+
+    def get_rooms(self, reservation):
+        reserves = RoomReserve.objects\
+            .filter(reservation_id=reservation.id)\
+            .values_list('room_id', flat=True)
+        rooms = Room.objects.filter(id__in=reserves)
+        return RoomSerializer(rooms, many=True).data
 
     def get_start_date(self, reservation):
         return RoomReserve.objects.all()\
-                .filter(reservation_id=reservation.id)\
+                .filter(reservation__id=reservation.id)\
                 .order_by('date')[0].date
 
     class Meta:
@@ -27,7 +34,7 @@ class ReservationViewSerializer(serializers.ModelSerializer):
             'pay_deadline',
             'start_date',
             'end_date',
-            'guests',
+            'guest',
             'rooms'
         )
 
@@ -38,7 +45,7 @@ class ReservationSerializer(serializers.ModelSerializer):
 
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     start_date = serializers.DateField()
-    rooms = serializers.IntegerField(many=True)
+    rooms = serializers.ListField(child=serializers.IntegerField())
 
     def create(self, validated_data):
         user = validated_data['user']
@@ -50,7 +57,7 @@ class ReservationSerializer(serializers.ModelSerializer):
         self.check_rooms_reserved(room_ids, start_date, end_date)
         dates = (
             start_date + dt.timedelta(i)
-            for i in range((end_date - start_date).days)
+            for i in range((end_date - start_date).days + 1)
         )
 
         with transaction.atomic():
@@ -68,6 +75,9 @@ class ReservationSerializer(serializers.ModelSerializer):
                     )
         return reservation
 
+    def to_representation(self, instance):
+        return ReservationViewSerializer(instance).data
+
     def check_dates(self, start_date: dt.date, end_date: dt.date):
         now = dt.datetime.now()
         if start_date < now.date():
@@ -81,11 +91,11 @@ class ReservationSerializer(serializers.ModelSerializer):
 
     def check_rooms_reserved(self, room_ids: list, start_date, end_date):
         for room_id in room_ids:
-            reserves = \
-                RoomReserve\
-                .objects.all()\
-                .filter(room_id=room_id, date__ge=start_date, date__le=end_date)\
-                .count()
+            reserves = RoomReserve.objects.all().filter(
+                room__id=room_id,
+                date__gte=start_date,
+                date__lte=end_date
+            ).count()
 
             if reserves > 0:
                 raise RoomAlreadyReserved()
@@ -94,7 +104,7 @@ class ReservationSerializer(serializers.ModelSerializer):
         now = dt.datetime.now()
         pay_deadline = start_date - self.PAY_DEADLINE
 
-        if now < pay_deadline:
+        if now.date() < pay_deadline:
             # There's still a lot of time before the start_date.
             return dt.datetime(*pay_deadline.timetuple()[:3], 12)
         # There's not enough time before the start_date, reserve for 1h.
@@ -106,6 +116,13 @@ class ReservationSerializer(serializers.ModelSerializer):
             'user',
             'start_date',
             'end_date',
-            'guests',
             'rooms'
         )
+
+
+class GuestWithReservationSerializer(GuestSerializer):
+    reservations = ReservationViewSerializer(many=True)
+
+    class Meta:
+        model = Guest
+        fields = GuestSerializer.Meta.fields + ('reservations',)

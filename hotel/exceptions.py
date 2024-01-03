@@ -1,6 +1,18 @@
 from rest_framework.exceptions import APIException
 
 
+class EmployeeNotFound(APIException):
+    status_code = 400
+    default_detail = 'Employee does not exist'
+    default_code = 'employee_not_found'
+
+
+class RestaurantNotFound(APIException):
+    status_code = 400
+    default_detail = 'Restaurant does not exist'
+    default_code = 'restaurant_not_found'
+
+
 class RoomNotFound(APIException):
     status_code = 400
     default_detail = 'Room does not exist'
@@ -23,3 +35,15 @@ class ReserveLimit(APIException):
     status_code = 400
     default_detail = 'Room reservation limit violated'
     default_code = 'reserve_limit'
+
+
+class UserExists(APIException):
+    status_code = 400
+    default_detail = 'Such user already exists'
+    default_code = 'user_exists'
+
+
+class InvalidCredentials(APIException):
+    status_code = 400
+    default_detail = 'No such user or password'
+    default_code = 'invalid_credentials'

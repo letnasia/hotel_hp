@@ -11,17 +11,15 @@ from .menu_item import MenuItem
 
 
 __all__ = [
-    "Employee",
-    "Role",
-    "Shift",
-    "Guest",
-    "Floor",
-    "Room",
-    "Reservation",
-    "RoomReserve",
-    "Restaurant",
-    "MenuItemCat",
-    "MenuItem",
-
-
+    'Employee',
+    'Role',
+    'Shift',
+    'Guest',
+    'Floor',
+    'Room',
+    'Reservation',
+    'RoomReserve',
+    'Restaurant',
+    'MenuItemCat',
+    'MenuItem',
 ]

@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework import serializers
 
 from hotel.models import Employee
@@ -15,3 +16,8 @@ class EmployeeWithShiftsSerializer(EmployeeSerializer):
 
     class Meta(EmployeeSerializer.Meta):
         fields = EmployeeSerializer.Meta.fields + ('shifts',)
+
+
+class EmployeeShiftsSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    shifts = serializers.ListField(child=serializers.IntegerField())

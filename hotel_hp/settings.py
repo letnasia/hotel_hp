@@ -89,6 +89,18 @@ WSGI_APPLICATION = 'hotel_hp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+DB_MYSQL = {
+    'ENGINE': 'django.db.backends.mysql',
+    'OPTIONS': {
+        'read_default_file': BASE_DIR / 'my.cnf',
+    },
+    'NAME': os.environ.get("DB_NAME"),
+    'HOST': os.environ.get("DB_HOST"),
+    'PORT': '3306',
+    'USER': os.environ.get("DB_USER"),
+    'PASSWORD': os.environ.get("DB_PASSWORD"),
+}
+
 DB_PSQL = {
     'ENGINE': 'django.db.backends.postgresql',
     'NAME': os.environ.get("DB_NAME"),
@@ -99,30 +111,41 @@ DB_PSQL = {
 }
 
 DB_SQLITE = {
-    "ENGINE": "django.db.backends.sqlite3",
-    "NAME": BASE_DIR / "db.sqlite3",
+    'ENGINE': "django.db.backends.sqlite3",
+    'NAME': BASE_DIR / "db.sqlite3",
 }
 
 DATABASES = {
-    'default': (DB_SQLITE if os.environ.get('USE_SQLITE') == 'True' else DB_PSQL)
+    # Use MySQL as a default.
+    'default': DB_MYSQL,
 }
 
+DB_TYPE = os.environ.get('DB_TYPE')
+
+if DB_TYPE == 'PSQL':
+    DATABASES['default'] = DB_PSQL
+elif DB_TYPE == 'SQLite':
+    DATABASES['default'] = DB_SQLITE
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'NumericPasswordValidator',
     },
 ]
 
@@ -157,7 +180,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS':
+        'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }

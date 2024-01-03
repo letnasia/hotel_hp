@@ -21,11 +21,9 @@ class Reservation(models.Model):
 
 class RoomReserve(models.Model):
     date = models.DateField()
-    room_id = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='reservations')
-    reservation_id = models.ForeignKey(Reservation, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='reservations')
+    reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = ('date', 'room_id')
+        unique_together = ('date', 'room')
     
-
-
