@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'django_filters',
     'celery',
     'drf_spectacular',
+    'drf_yasg',
     # Local apps (user-defined)
     'hotel',
 ]

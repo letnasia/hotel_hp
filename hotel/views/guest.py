@@ -1,21 +1,26 @@
+from drf_yasg.utils import swagger_auto_schema, no_body
 from django.contrib.auth.models import User
 from django.contrib import auth
 from django.db import transaction
 from rest_framework import status
-from rest_framework.authentication import SessionAuthentication, \
-    TokenAuthentication
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import api_view, permission_classes, \
     authentication_classes
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
-from hotel.exceptions import RestaurantNotFound, UserExists, InvalidCredentials
-from hotel.models import Restaurant, Guest
+from hotel.exceptions import UserExists, InvalidCredentials
+from hotel.models import Guest
 from hotel.serializers.guest import GuestCreateSerializer, GuestSerializer, \
     GuestLoginSerializer
 
 
+@swagger_auto_schema(
+    methods=['post'],
+    request_body=GuestCreateSerializer,
+    responses={200: "OK"}
+)
 @api_view(['POST'])
 @authentication_classes([])
 @permission_classes([AllowAny])
@@ -50,6 +55,11 @@ def register(request):
         return Response(GuestSerializer(guest).data, status=status.HTTP_200_OK)
 
 
+@swagger_auto_schema(
+    methods=['post'],
+    request_body=GuestLoginSerializer,
+    responses={200: "OK"}
+)
 @api_view(['POST'])
 @authentication_classes([])
 @permission_classes([AllowAny])
@@ -75,6 +85,11 @@ def login(request):
     return Response(GuestSerializer(guest).data, status=status.HTTP_200_OK)
 
 
+@swagger_auto_schema(
+    methods=['post'],
+    request_body=no_body,
+    responses={200: "OK"}
+)
 @api_view(['POST'])
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])

@@ -1,3 +1,4 @@
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication, \
     TokenAuthentication
@@ -31,6 +32,11 @@ class RestaurantViewSet(ModelViewSet):
             return RestaurantSerializer
 
 
+@swagger_auto_schema(
+    methods=['post'],
+    request_body=RestaurantMenuItemsSerializer,
+    responses={200: "OK"}
+)
 @api_view(['POST'])
 @authentication_classes([
     SessionAuthentication,
@@ -57,6 +63,11 @@ def restaurant_menu_add(request):
     }, status=status.HTTP_201_CREATED)
 
 
+@swagger_auto_schema(
+    methods=['post'],
+    request_body=RestaurantMenuItemsSerializer,
+    responses={200: "OK"}
+)
 @api_view(['POST'])
 @authentication_classes([
     SessionAuthentication,

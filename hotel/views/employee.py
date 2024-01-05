@@ -1,3 +1,4 @@
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication, \
     TokenAuthentication
@@ -31,6 +32,11 @@ class EmployeeViewSet(ModelViewSet):
             return EmployeeSerializer
 
 
+@swagger_auto_schema(
+    methods=['post'],
+    request_body=EmployeeShiftsSerializer,
+    responses={201: "CREATED"}
+)
 @api_view(['POST'])
 @authentication_classes([
     SessionAuthentication,
