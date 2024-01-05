@@ -4,7 +4,7 @@ from hotel.models.menu_item_cat import MenuItemCat
 
 
 class MenuItem(models.Model):
-    category_id = models.ForeignKey(MenuItemCat, on_delete=models.RESTRICT)
+    category = models.ForeignKey(MenuItemCat, on_delete=models.RESTRICT)
     name = models.CharField(max_length=255)
     price = models.FloatField()
     description = models.TextField(blank=True)

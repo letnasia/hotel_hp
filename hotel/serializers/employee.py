@@ -8,7 +8,7 @@ from hotel.serializers.shift import ShiftSerializer
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
-        fields = ('id', 'first_name', 'last_name', 'role_id')
+        fields = ('id', 'first_name', 'last_name', 'role')
 
 
 class EmployeeWithShiftsSerializer(EmployeeSerializer):

@@ -5,6 +5,6 @@ from hotel.models.menu_item import MenuItem
 
 
 class Restaurant(models.Model):
-    floor_id = models.ForeignKey(Floor, on_delete=models.RESTRICT)
+    floor = models.ForeignKey(Floor, on_delete=models.RESTRICT)
     name = models.CharField(max_length=255)
     menu = models.ManyToManyField(MenuItem)

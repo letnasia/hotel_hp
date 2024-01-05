@@ -7,7 +7,7 @@ from hotel.serializers.menu_item import MenuItemSerializer
 class RestaurantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Restaurant
-        fields = ('id', 'floor_id', 'name')
+        fields = ('id', 'floor', 'name')
 
 
 class RestaurantWithMenuSerializer(RestaurantSerializer):
