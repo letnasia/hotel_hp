@@ -6,4 +6,11 @@ from hotel.models import Room
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
-        fields = ('id', 'floor_id', 'size', 'accommodation', 'description')
+        fields = (
+            'id',
+            'floor',
+            'size',
+            'accommodation',
+            'price',
+            'description'
+        )

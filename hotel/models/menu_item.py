@@ -8,6 +8,7 @@ class MenuItem(models.Model):
     name = models.CharField(max_length=255)
     price = models.FloatField()
     description = models.TextField(blank=True)
+    restaurants = models.ManyToManyField('hotel.Restaurant')
 
     def __str__(self):
         return self.name
