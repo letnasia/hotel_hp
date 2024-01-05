@@ -188,20 +188,36 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
+RABBITMQ_HOST = os.environ.get("RABBITMQ_HOST")
 
-REDIS_HOST = os.environ.get("REDIS_HOST")
-CELERY_BROKER_URL = f'redis://{REDIS_HOST}:6379/0'
+if RABBITMQ_HOST is not None:
+    CELERY_BROKER_URL = f'amqp://{RABBITMQ_HOST}:5672/'
+else:
+    REDIS_HOST = os.environ.get("REDIS_HOST")
+    CELERY_BROKER_URL = f'redis://{REDIS_HOST}:6379/0'
 
 
 CELERY_BEAT_SCHEDULE = {
-    # 'every_second': {
-    #     'task': 'products.tasks.every_second_task',
-    #     'schedule': 1.0,
-    # },
-    # 'daily_stats': {
-    #     'task': 'products.tasks.daily_stats',
-    #     'schedule': crontab(minute='0', hour='10'),
-    # },
+    'cleanup_shifts': {
+        'task': 'hotel.tasks.cleanup_shifts',
+        'schedule': crontab(minute='0', hour='1'),
+    },
+    'populate_shifts': {
+        'task': 'hotel.tasks.populate_shifts',
+        'schedule': crontab(minute='0', hour='1'),
+    },
+    'cleanup_old_reservations': {
+        'task': 'hotel.tasks.cleanup_old_reservations',
+        'schedule': crontab(minute='0', hour='1'),
+    },
+    'cleanup_unpaid_reservations': {
+        'task': 'hotel.tasks.cleanup_unpaid_reservations',
+        'schedule': dt.timedelta(minutes=15),
+    },
+    'reservation_daily_stats': {
+        'task': 'products.tasks.reservation_daily_stats',
+        'schedule': crontab(minute='0', hour='8'),
+    },
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

@@ -6,6 +6,7 @@ from hotel.exceptions import RoomAlreadyReserved, RoomNotFound, DateFromPast, Re
 from hotel.models import Reservation, RoomReserve, Room, Guest
 from hotel.serializers.guest import GuestSerializer
 from hotel.serializers.room import RoomSerializer
+from hotel import tasks
 
 
 class ReservationViewSerializer(serializers.ModelSerializer):
@@ -55,10 +56,10 @@ class ReservationSerializer(serializers.ModelSerializer):
         self.check_dates(start_date, end_date)
         self.check_rooms_exist(room_ids)
         self.check_rooms_reserved(room_ids, start_date, end_date)
-        dates = (
+        dates = [
             start_date + dt.timedelta(i)
             for i in range((end_date - start_date).days + 1)
-        )
+        ]
 
         with transaction.atomic():
             reservation = Reservation.objects.create(
@@ -66,13 +67,17 @@ class ReservationSerializer(serializers.ModelSerializer):
                 pay_deadline=self.get_pay_deadline(start_date),
                 end_date=end_date,
             )
-            for room_id in room_ids:
-                for date in dates:
-                    RoomReserve.objects.create(
-                        reservation_id=reservation.id,
-                        room_id=room_id,
-                        date=date,
-                    )
+            reserves = [
+                RoomReserve(
+                    reservation_id=reservation.id,
+                    room_id=room_id,
+                    date=date,
+                )
+                for room_id in room_ids
+                for date in dates
+            ]
+            RoomReserve.objects.bulk_create(reserves)
+        tasks.reservation_created.apply_async(args=(reservation.id,))
         return reservation
 
     def to_representation(self, instance):

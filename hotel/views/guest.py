@@ -28,6 +28,8 @@ def register(request):
     serializer = GuestCreateSerializer(data=request.data)
 
     if not serializer.is_valid():
+        print(request.data)
+        print(serializer._errors)
         raise ValidationError()
 
     validated_data = serializer.validated_data

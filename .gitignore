@@ -2,3 +2,6 @@
 .idea/
 *.pyc
 __pycache__/
+credentials.json
+.DS_Store
+*.db

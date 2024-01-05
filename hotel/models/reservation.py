@@ -6,7 +6,11 @@ from hotel.models.room import Room
 
 
 class Reservation(models.Model):
-    guest = models.ForeignKey(Guest, related_name='reservations', on_delete=models.CASCADE)
+    guest = models.ForeignKey(
+        Guest,
+        related_name='reservations',
+        on_delete=models.CASCADE
+    )
     created_at = models.DateTimeField(default=dt.datetime.now)
     is_paid = models.BooleanField(default=False)
     pay_deadline = models.DateTimeField()
@@ -17,6 +21,17 @@ class Reservation(models.Model):
         indexes = [
             models.Index(fields=['end_date'])
         ]
+
+    def get_unique_rooms(self):
+        reserves = RoomReserve.objects\
+            .filter(reservation_id=self.id)\
+            .values_list('room_id', flat=True)
+        return Room.objects.filter(id__in=reserves)
+
+    def get_start_date(self):
+        return RoomReserve.objects.all()\
+                .filter(reservation__id=self.id)\
+                .order_by('date')[0].date
 
 
 class RoomReserve(models.Model):
