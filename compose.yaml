@@ -1,0 +1,89 @@
+services:
+  web:
+    container_name: web
+    depends_on:
+      - ${DOCKER_DB}
+      - ${DOCKER_BROKER}
+    build:
+        context: .
+        dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - DB_TYPE=${DOCKER_DB_TYPE}
+      - DB_HOST=${DOCKER_DB_HOST}
+      - DB_NAME=${DOCKER_DB_NAME}
+      - DB_USER=${DOCKER_DB_USER}
+      - DB_PASSWORD=${DOCKER_DB_PASSWORD}
+      - DB_PORT=${DOCKER_DB_PORT}
+      - CELERY_BROKER_URL=${DOCKER_CELERY_BROKER_URL}
+      - DEBUG=${DEBUG}
+      - HTTPS="on"
+    command: ["gunicorn", "-c", "gunicorn_config.py", "hotel_hp.wsgi"]
+    restart: always
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - ${DOCKER_DB}
+    volumes:
+      - .:/app
+    environment:
+      - DB_TYPE=${DOCKER_DB_TYPE}
+      - DB_HOST=${DOCKER_DB_HOST}
+      - DB_NAME=${DOCKER_DB_NAME}
+      - DB_USER=${DOCKER_DB_USER}
+      - DB_PASSWORD=${DOCKER_DB_PASSWORD}
+      - DB_PORT=${DOCKER_DB_PORT}
+      - DEBUG=${DEBUG}
+    command: ["python", "manage.py", "migrate"]
+    restart: on-failure
+  pdb:
+    image: "postgres:15"
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${DOCKER_DB_NAME}
+      POSTGRES_USER: ${DOCKER_DB_USER}
+      POSTGRES_PASSWORD: ${DOCKER_DB_PASSWORD}
+  mydb:
+    image: "mysql:8.2"
+    ports:
+      - '3306:3306'
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DOCKER_DB_NAME}
+      MYSQL_USER: ${DOCKER_DB_USER}
+      MYSQL_PASSWORD: ${DOCKER_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DOCKER_DB_PASSWORD}
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
+  rabbitmq:
+    image: "rabbitmq:latest"
+    ports:
+      - "5672:5672"
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - ${DOCKER_DB}
+      - ${DOCKER_BROKER}
+    volumes:
+      - .:/app
+    environment:
+      - DB_TYPE=${DOCKER_DB_TYPE}
+      - DB_HOST=${DOCKER_DB_HOST}
+      - DB_NAME=${DOCKER_DB_NAME}
+      - DB_USER=${DOCKER_DB_USER}
+      - DB_PASSWORD=${DOCKER_DB_PASSWORD}
+      - DB_PORT=${DOCKER_DB_PORT}
+      - CELERY_BROKER_URL=${DOCKER_CELERY_BROKER_URL}
+      - DEBUG=${DEBUG}
+    command: ["celery", "-A", "hotel_hp.celery", "worker", "-l", "info", "--beat"]
+    restart: on-failure

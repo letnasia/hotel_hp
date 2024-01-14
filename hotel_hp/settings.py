@@ -103,7 +103,7 @@ WSGI_APPLICATION = 'hotel_hp.wsgi.application'
 DB_MYSQL = {
     'ENGINE': 'django.db.backends.mysql',
     'OPTIONS': {
-        'read_default_file': BASE_DIR / 'my.cnf',
+        'read_default_file': str(BASE_DIR / 'my.cnf'),
     },
     'NAME': os.environ.get('DB_NAME'),
     'HOST': os.environ.get('DB_HOST'),
@@ -256,5 +256,6 @@ SOCIALACCOUNT_PROVIDERS = {
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 
 WSGI_APPLICATION = "hotel_hp.wsgi.application"

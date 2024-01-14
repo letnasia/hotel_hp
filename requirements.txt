@@ -6,4 +6,13 @@ celery~=5.3.6
 graphene~=3.3
 python-dotenv~=1.0.0
 gspread~=5.12.4
-gunicorn~=23.2
+gunicorn~=21.2
+graphene~=3.3
+graphene-django~=3.0.0
+mysqlclient
+drf-spectacular
+drf-yasg
+django-redis
+django-rabbitmq
+django-allauth
+psycopg2
