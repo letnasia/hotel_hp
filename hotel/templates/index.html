@@ -1,0 +1,36 @@
+{% load socialaccount %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hotel Home Project</title>
+</head>
+<body>
+<h1>Hotel Home Project</h1>
+
+{% if user.is_authenticated %}
+  <p>You are logged in as <b>{{ user.username }}</b></p>
+  <br/>
+  <form method="post" action="/logout">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+  </form>
+{% else %}
+  <p>You are not logged in</p>
+  <br/>
+  <form method="get" action="/login">
+    {% csrf_token %}
+    <button type="submit">Login</button>
+  </form>
+{% endif %}
+
+
+{% for message in messages %}
+  <br/>
+  {% if 'success' not in message.tags %}
+  <p class="alert alert-warning" role="alert"><span style="font-weight:bold">{{ message }}</span></p>
+  {% endif %}
+{% endfor %}
+
+</body>
+</html>

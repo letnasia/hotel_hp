@@ -27,12 +27,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+] + os.environ.get('ALLOWED_HOSTS', '').split(',')
+
+CSRF_TRUSTED_ORIGINS = [
+] + os.environ.get('ALLOWED_ORIGINS', '').split(',')
 
 
 # Application definition
@@ -53,6 +57,10 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'drf_yasg',
     'graphene_django',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     # Local apps (user-defined)
     'hotel',
 ]
@@ -65,6 +73,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'hotel_hp.urls'
@@ -96,25 +105,25 @@ DB_MYSQL = {
     'OPTIONS': {
         'read_default_file': BASE_DIR / 'my.cnf',
     },
-    'NAME': os.environ.get("DB_NAME"),
-    'HOST': os.environ.get("DB_HOST"),
+    'NAME': os.environ.get('DB_NAME'),
+    'HOST': os.environ.get('DB_HOST'),
     'PORT': '3306',
-    'USER': os.environ.get("DB_USER"),
-    'PASSWORD': os.environ.get("DB_PASSWORD"),
+    'USER': os.environ.get('DB_USER'),
+    'PASSWORD': os.environ.get('DB_PASSWORD'),
 }
 
 DB_PSQL = {
     'ENGINE': 'django.db.backends.postgresql',
-    'NAME': os.environ.get("DB_NAME"),
-    'HOST': os.environ.get("DB_HOST"),
+    'NAME': os.environ.get('DB_NAME'),
+    'HOST': os.environ.get('DB_HOST'),
     'PORT': '5432',
-    'USER': os.environ.get("DB_USER"),
-    'PASSWORD': os.environ.get("DB_PASSWORD"),
+    'USER': os.environ.get('DB_USER'),
+    'PASSWORD': os.environ.get('DB_PASSWORD'),
 }
 
 DB_SQLITE = {
-    'ENGINE': "django.db.backends.sqlite3",
-    'NAME': BASE_DIR / "db.sqlite3",
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': BASE_DIR / 'db.sqlite3',
 }
 
 DATABASES = {
@@ -188,12 +197,12 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
-RABBITMQ_HOST = os.environ.get("RABBITMQ_HOST")
+RABBITMQ_HOST = os.environ.get('RABBITMQ_HOST')
 
 if RABBITMQ_HOST is not None:
     CELERY_BROKER_URL = f'amqp://{RABBITMQ_HOST}:5672/'
 else:
-    REDIS_HOST = os.environ.get("REDIS_HOST")
+    REDIS_HOST = os.environ.get('REDIS_HOST')
     CELERY_BROKER_URL = f'redis://{REDIS_HOST}:6379/0'
 
 
@@ -221,12 +230,29 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.environ.get("EMAIL_HOST")
-EMAIL_PORT = int(os.environ.get("EMAIL_PORT"))
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASSWORD")
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT'))
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 EMAIL_USE_TLS = True
 
 GRAPHENE = {
-    "SCHEMA": "hotel_hp.schema.schema"
+    'SCHEMA': 'hotel_hp.schema.schema'
 }
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+    },
+}
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'

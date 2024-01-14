@@ -15,8 +15,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.contrib.auth.views import LogoutView
 from django.urls import path, include
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import TemplateView
 from rest_framework import permissions
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
@@ -40,6 +42,12 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/hotel/', include(hotel_urls)),
+
+    path("", TemplateView.as_view(template_name="index.html")),
+    path("login", TemplateView.as_view(template_name="login.html")),
+    path("logout", LogoutView.as_view()),
+    path("accounts/", include("allauth.urls")),
+
     path('api/swagger<format>/', schema_view.without_ui(cache_timeout=0),
          name='schema-json'),
     path('api/swagger/', schema_view.with_ui('swagger', cache_timeout=0),
