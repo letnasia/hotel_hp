@@ -16,3 +16,5 @@ django-redis
 django-rabbitmq
 django-allauth
 psycopg2
+flake8
+coverage
