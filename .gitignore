@@ -7,3 +7,5 @@ credentials.json
 *.db
 celerybeat-*
 .coverage
+.pytest_cache
+db.sqlite3

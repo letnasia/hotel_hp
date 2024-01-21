@@ -8,7 +8,7 @@ class ManagerKeyAuthenticator(authentication.BaseAuthentication):
         key = self.extract_key(request)
 
         if not key:
-            return None
+            return None, None
 
         username = self.authenticate_credentials(key)
 
@@ -28,8 +28,4 @@ class ManagerKeyAuthenticator(authentication.BaseAuthentication):
 
     @staticmethod
     def extract_key(request):
-        auth = request.META.get('HTTP_X_MANAGER_KEY', b'')
-        if isinstance(auth, str):
-            # Work around django test client oddness
-            auth = auth.encode(HTTP_HEADER_ENCODING)
-        return auth
+        return request.META.get('HTTP_X_MANAGER_KEY')

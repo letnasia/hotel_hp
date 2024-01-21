@@ -15,16 +15,10 @@ class ReservationViewSerializer(serializers.ModelSerializer):
     rooms = serializers.SerializerMethodField()
 
     def get_rooms(self, reservation):
-        reserves = RoomReserve.objects\
-            .filter(reservation_id=reservation.id)\
-            .values_list('room_id', flat=True)
-        rooms = Room.objects.filter(id__in=reserves)
-        return RoomSerializer(rooms, many=True).data
+        return RoomSerializer(reservation.get_unique_rooms(), many=True).data
 
     def get_start_date(self, reservation):
-        return RoomReserve.objects.all()\
-                .filter(reservation__id=reservation.id)\
-                .order_by('date')[0].date
+        return reservation.get_start_date()
 
     class Meta:
         model = Reservation
@@ -105,7 +99,7 @@ class ReservationSerializer(serializers.ModelSerializer):
             if reserves > 0:
                 raise RoomAlreadyReserved()
 
-    def get_pay_deadline(self, start_date: dt.datetime):
+    def get_pay_deadline(self, start_date: dt.date):
         now = dt.datetime.now()
         pay_deadline = start_date - self.PAY_DEADLINE
 
