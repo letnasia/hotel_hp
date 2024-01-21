@@ -33,11 +33,16 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
-] + os.environ.get('ALLOWED_HOSTS', '').split(',')
+]
+
+if value := os.environ.get('ALLOWED_HOSTS'):
+    ALLOWED_HOSTS += value.split(',')
 
 CSRF_TRUSTED_ORIGINS = [
-] + os.environ.get('ALLOWED_ORIGINS', '').split(',')
+]
 
+if value := os.environ.get('ALLOWED_ORIGINS'):
+    ALLOWED_HOSTS += value.split(',')
 
 # Application definition
 
