@@ -231,7 +231,7 @@ CELERY_BEAT_SCHEDULE = {
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
-EMAIL_PORT = int(os.environ.get('EMAIL_PORT'))
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 465))
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 EMAIL_USE_TLS = True

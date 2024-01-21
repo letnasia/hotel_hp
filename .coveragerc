@@ -1,0 +1,5 @@
+[run]
+omit =
+    hotel/migrations/*
+    gunicorn_config.py
+    google_sheets/client.py
