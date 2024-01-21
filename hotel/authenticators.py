@@ -1,6 +1,6 @@
 import os
 from django.contrib.auth.models import User
-from rest_framework import authentication, exceptions, HTTP_HEADER_ENCODING
+from rest_framework import authentication, exceptions
 
 
 class ManagerKeyAuthenticator(authentication.BaseAuthentication):

@@ -1,6 +1,6 @@
-import pytest
 import datetime as dt
-from unittest.mock import patch, Mock
+from unittest.mock import patch
+import pytest
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.test import TestCase
@@ -94,12 +94,12 @@ class ReservationSerializerCase(TestCase):
     def test_create_from_past(self):
         start_date = dt.date.today() - dt.timedelta(days=1)
         end_date = start_date + dt.timedelta(days=10)
-        data = dict(
-            user=self.user,
-            rooms=[room.id for room in self.rooms],
-            start_date=start_date,
-            end_date=end_date,
-        )
+        data = {
+            'user': self.user,
+            'rooms': [room.id for room in self.rooms],
+            'start_date': start_date,
+            'end_date': end_date,
+        }
         serializer = ReservationSerializer()
         self.assertRaises(
             DateFromPast,
@@ -112,12 +112,12 @@ class ReservationSerializerCase(TestCase):
         end_date = start_date + dt.timedelta(
             days=ReservationSerializer.RESERVE_LIMIT_DAYS + 1
         )
-        data = dict(
-            user=self.user,
-            rooms=[room.id for room in self.rooms],
-            start_date=start_date,
-            end_date=end_date,
-        )
+        data = {
+            'user': self.user,
+            'rooms': [room.id for room in self.rooms],
+            'start_date': start_date,
+            'end_date': end_date,
+        }
         serializer = ReservationSerializer()
         self.assertRaises(
             ReserveLimit,
@@ -128,12 +128,12 @@ class ReservationSerializerCase(TestCase):
     def test_create_no_room(self):
         start_date = dt.date.today() + dt.timedelta(days=5)
         end_date = start_date + dt.timedelta(days=10)
-        data = dict(
-            user=self.user,
-            rooms=[room.id for room in self.rooms] + [12345],
-            start_date=start_date,
-            end_date=end_date,
-        )
+        data = {
+            'user': self.user,
+            'rooms': [room.id for room in self.rooms] + [12345],
+            'start_date': start_date,
+            'end_date': end_date,
+        }
         serializer = ReservationSerializer()
         self.assertRaises(
             RoomNotFound,
@@ -144,12 +144,12 @@ class ReservationSerializerCase(TestCase):
     def test_create_already_reserved(self):
         start_date = self.end_date
         end_date = start_date + dt.timedelta(days=10)
-        data = dict(
-            user=self.user,
-            rooms=[room.id for room in self.rooms],
-            start_date=start_date,
-            end_date=end_date,
-        )
+        data = {
+            'user': self.user,
+            'rooms': [room.id for room in self.rooms],
+            'start_date': start_date,
+            'end_date': end_date,
+        }
         serializer = ReservationSerializer()
         self.assertRaises(
             RoomAlreadyReserved,
@@ -176,12 +176,12 @@ class ReservationSerializerCase(TestCase):
     def test_create(self, hook_task):
         start_date = dt.date.today() + dt.timedelta(days=25)
         end_date = start_date + dt.timedelta(days=10)
-        data = dict(
-            user=self.user,
-            rooms=[room.id for room in self.rooms],
-            start_date=start_date,
-            end_date=end_date,
-        )
+        data = {
+            'user': self.user,
+            'rooms': [room.id for room in self.rooms],
+            'start_date': start_date,
+            'end_date': end_date,
+        }
         serializer = ReservationSerializer()
         reservation = serializer.create(data)
         hook_task.return_value = ''
