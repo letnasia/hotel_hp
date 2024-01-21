@@ -14,9 +14,9 @@ jobs:
       DEBUG: True
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Python 3.11
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.11
       - name: Install dependencies
@@ -25,7 +25,7 @@ jobs:
           pip install -r requirements.txt
       - name: Lint with flake8
         run: |
-          flake8 .
+          pylint --recursive y .
       - name: Test with Django test
         run: |
           python manage.py test
