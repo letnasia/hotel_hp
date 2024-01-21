@@ -1,0 +1,38 @@
+name: Pull Request or Commit Check
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      DB_TYPE: SQLite
+      DEBUG: True
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Lint with flake8
+        run: |
+          flake8 .
+      - name: Test with Django test
+        run: |
+          python manage.py test
+      - name: Check migrations
+        run: |
+          python manage.py makemigrations --check --dry-run
+      - name: Code coverage
+        run: |
+          coverage run --source='.' manage.py test
+          coverage report --fail-under=80
