@@ -28,8 +28,7 @@ class RestaurantViewSet(ModelViewSet):
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return RestaurantWithMenuSerializer
-        else:
-            return RestaurantSerializer
+        return RestaurantSerializer
 
 
 @swagger_auto_schema(

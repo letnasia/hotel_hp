@@ -1,4 +1,4 @@
-from django.db import transaction
+# pylint: disable=abstract-method
 from rest_framework import serializers
 
 from hotel.models import Employee

@@ -52,6 +52,6 @@ class MenuItemFilter(django_filters.FilterSet):
 
     q = django_filters.CharFilter(method='filter_by_q', label='Search')
 
-    def filter_by_q(self, queryset, name, value):
+    def filter_by_q(self, queryset, _, value):
         return queryset.filter(name__icontains=value) \
             | queryset.filter(description__icontains=value)

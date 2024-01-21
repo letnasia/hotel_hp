@@ -7,6 +7,7 @@ def send_message(text, chat_id=None):
     token = os.environ.get("TELEGRAM_API_TOKEN")
     default_chat_id = os.environ.get("TELEGRAM_CHAT_ID")
 
+    # pylint: disable=missing-timeout
     requests.post(
         f"https://api.telegram.org/bot{token}/sendMessage",
         json={

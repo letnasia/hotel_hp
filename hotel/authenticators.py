@@ -24,6 +24,7 @@ class ManagerKeyAuthenticator(authentication.BaseAuthentication):
             return 'vasyl_petrenko'
         if key == os.environ.get('MANAGER_PETRO_KEY'):
             return 'petro_vasylenko'
+        return None
 
     @staticmethod
     def extract_key(request):

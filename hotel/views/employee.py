@@ -28,8 +28,7 @@ class EmployeeViewSet(ModelViewSet):
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return EmployeeWithShiftsSerializer
-        else:
-            return EmployeeSerializer
+        return EmployeeSerializer
 
 
 @swagger_auto_schema(

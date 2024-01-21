@@ -9,7 +9,7 @@
 
 # Files or directories to be skipped. They should be base names, not
 # paths.
-ignore=CVS
+ignore=CVS,venv,manage.py
 
 # Add files or directories matching the regex patterns to the ignore-list. The
 # regex matches against paths and can be in Posix or Windows format.
@@ -108,6 +108,8 @@ disable=
     cyclic-import,
     import-error,
     no-member,
+    too-many-ancestors,
+    trailing-comma-tuple,
 
 
 [REPORTS]
@@ -352,7 +354,7 @@ mixin-class-rgx=.*MixIn
 # (useful for modules/projects where namespaces are manipulated during runtime
 # and thus existing member attributes cannot be deduced by static analysis). It
 # supports qualified module names, as well as Unix pattern matching.
-ignored-modules=
+ignored-modules=migrations
 
 # List of class names for which member attributes should not be checked (useful
 # for classes with dynamically set attributes). This supports the use of
@@ -519,7 +521,7 @@ preferred-modules=
 
 # Exceptions that will emit a warning when being caught. Defaults to
 # "Exception"
-overgeneral-exceptions=Exception
+overgeneral-exceptions=builtins.Exception
 
 
 [TYPING]

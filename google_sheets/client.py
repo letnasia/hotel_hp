@@ -1,5 +1,5 @@
-import gspread
 import os
+import gspread
 
 CREDENTIALS_PATH = os.path.join(
     # os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
@@ -36,8 +36,3 @@ def write_to_sheet(file, data):
         sh = gc.open(file)
         worksheet = sh.sheet1
         worksheet.append_rows(data)
-
-
-if __name__ == "__main__":
-    data = read_from_sheet()
-    print(data)

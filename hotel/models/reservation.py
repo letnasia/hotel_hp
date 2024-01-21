@@ -1,5 +1,5 @@
-from django.db import models
 import datetime as dt
+from django.db import models
 
 from hotel.models.guest import Guest
 from hotel.models.room import Room

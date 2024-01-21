@@ -1,6 +1,6 @@
+import datetime as dt
 from rest_framework import serializers
 from django.db import transaction
-import datetime as dt
 
 from hotel.exceptions import RoomAlreadyReserved, RoomNotFound, DateFromPast, ReserveLimit
 from hotel.models import Reservation, RoomReserve, Room, Guest

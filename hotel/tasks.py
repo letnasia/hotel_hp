@@ -3,12 +3,12 @@ from django.db import transaction
 
 from google_sheets.client import write_to_sheet
 from hotel.telegram_client import send_message
+from hotel.models import Shift, Reservation
 from hotel_hp.celery import app
-from hotel.models import Shift, Reservation, RoomReserve, Room
 
 
-@app.task(bind=True)
-def cleanup_shifts(self):
+@app.task()
+def cleanup_shifts():
     """Cleanup shifts older than a week"""
     day_count = 7
 
@@ -17,8 +17,8 @@ def cleanup_shifts(self):
     Shift.objects.filter(date__lt=week_behind).delete()
 
 
-@app.task(bind=True)
-def populate_shifts(self):
+@app.task()
+def populate_shifts():
     """Ensure shifts a week ahead"""
     shift_count = 3
     day_count = 7
@@ -40,8 +40,8 @@ def populate_shifts(self):
         Shift.objects.bulk_create(missing)
 
 
-@app.task(bind=True)
-def cleanup_old_reservations(self):
+@app.task()
+def cleanup_old_reservations():
     """Cleanup reservations that have expired a week before"""
     day_count = 7
 
@@ -50,20 +50,16 @@ def cleanup_old_reservations(self):
     Reservation.objects.filter(last_date__lt=week_behind).delete()
 
 
-@app.task(bind=True)
-def cleanup_unpaid_reservations(self):
+@app.task()
+def cleanup_unpaid_reservations():
     """Cleanup unpaid reservations that have reached the deadline"""
-    day_count = 7
-
-    today = dt.date.today()
-    week_behind = today - dt.timedelta(days=day_count)
     Reservation.objects\
         .filter(is_paid=False, pay_deadline__lt=dt.datetime.now())\
         .delete()
 
 
-@app.task(bind=True)
-def reservation_created(self, reservation_id):
+@app.task()
+def reservation_created(reservation_id):
     """Notify about a new reservation"""
     reservation = Reservation.objects.get(id=reservation_id)
     start_date = reservation.get_start_date()
@@ -76,8 +72,8 @@ def reservation_created(self, reservation_id):
     )
 
 
-@app.task(bind=True)
-def reservation_daily_stats(self):
+@app.task()
+def reservation_daily_stats():
     """Report about daily reservation stats"""
     today = dt.date.today()
     yesterday = today - dt.timedelta(days=1)
