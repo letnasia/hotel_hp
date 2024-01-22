@@ -28,8 +28,6 @@ def register(request):
     serializer = GuestCreateSerializer(data=request.data)
 
     if not serializer.is_valid():
-        print(request.data)
-        print(serializer._errors)
         raise ValidationError()
 
     validated_data = serializer.validated_data
@@ -53,7 +51,11 @@ def register(request):
             last_name=validated_data['last_name'],
             phone_number=validated_data['phone_number'],
         )
-        auth.login(request, user)
+        auth.login(
+            request,
+            user,
+            backend='django.contrib.auth.backends.ModelBackend'
+        )
         return Response(GuestSerializer(guest).data, status=status.HTTP_200_OK)
 
 
@@ -77,7 +79,6 @@ def login(request):
         username=validated_data['login'],
         password=validated_data['password'],
     )
-    print(validated_data)
 
     if user is None:
         raise InvalidCredentials()

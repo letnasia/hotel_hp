@@ -34,7 +34,7 @@ def populate_shifts():
         missing = [
             Shift(date=today + dt.timedelta(days=d), number=s)
             for d in range(day_count)
-            for s in range(shift_count)
+            for s in range(1, shift_count + 1)
             if (today + dt.timedelta(days=d), s) not in existing
         ]
         Shift.objects.bulk_create(missing)
