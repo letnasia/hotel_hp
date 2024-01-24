@@ -4,8 +4,9 @@ import pytest
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.test import TestCase
+from django.utils import timezone
 
-import hotel.tasks as tasks
+from hotel import tasks
 from hotel.models import Role, Employee, Shift, Floor, Room, Guest, \
     Reservation, RoomReserve
 
@@ -105,9 +106,9 @@ class ReservationTestCase(TestCase):
         with transaction.atomic():
             self.reservation = Reservation.objects.create(
                 guest=self.guest,
-                pay_deadline=dt.datetime.now() + dt.timedelta(days=2),
+                pay_deadline=timezone.now() + dt.timedelta(days=2),
                 end_date=self.end_date,
-                created_at=dt.datetime.now() - dt.timedelta(days=1)
+                created_at=timezone.now() - dt.timedelta(days=1)
             )
             reserves = [
                 RoomReserve(
@@ -125,7 +126,7 @@ class ReservationTestCase(TestCase):
         send_message.return_value = True
         tasks.reservation_created(self.reservation.id)
         message = send_message.call_args.args[0]
-        self.assertTrue(type(message) is str)
+        self.assertTrue(isinstance(message,str))
         self.assertTrue(f'New reservation {self.reservation.id}' in message)
 
     @patch('hotel.tasks.write_to_sheet')
@@ -134,5 +135,5 @@ class ReservationTestCase(TestCase):
         tasks.reservation_daily_stats()
         file = write_to_sheet.call_args.args[0]
         rows = write_to_sheet.call_args.args[1]
-        self.assertTrue(type(file) is str)
+        self.assertTrue(isinstance(file, str))
         self.assertTrue(len(rows))

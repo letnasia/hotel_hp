@@ -1,5 +1,5 @@
-import datetime as dt
 from django.db import models
+from django.utils import timezone
 
 from hotel.models.guest import Guest
 from hotel.models.room import Room
@@ -11,7 +11,7 @@ class Reservation(models.Model):
         related_name='reservations',
         on_delete=models.CASCADE
     )
-    created_at = models.DateTimeField(default=dt.datetime.now)
+    created_at = models.DateTimeField(default=timezone.now)
     is_paid = models.BooleanField(default=False)
     pay_deadline = models.DateTimeField()
     end_date = models.DateField()
