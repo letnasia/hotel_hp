@@ -131,7 +131,7 @@ class RestaurantTestCase(UserMixin, TestCase):
         )
         self.assertEqual(response.status_code, 201)
         restaurant_id = response.data['id']
-        self.assertGreater(id, 0)
+        self.assertGreater(restaurant_id, 0)
         response = self.client.delete(f'/api/hotel/restaurant/{restaurant_id}/')
         self.assertEqual(response.status_code, 204)
         response = self.client.get(f'/api/hotel/restaurant/{restaurant_id}/')
